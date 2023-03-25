@@ -19,10 +19,18 @@ public class PlayerControl : MonoBehaviour
     private SpriteRenderer sptRander;
     private PhysicsCheck phyCheck;
 
+    private float walkSpeed;
+    private float runSpeed;
+
     private void Awake()
     {
+        walkSpeed = speed;
+        runSpeed = speed * 2;
+
         input = new PlayerControlInput();
         input.Player.Jump.started += Jump;
+        input.Player.Runing.performed += Accelerate;
+        input.Player.Runing.canceled += Runing_canceled;
     }
 
     void Start()
@@ -58,7 +66,17 @@ public class PlayerControl : MonoBehaviour
     private void Jump(InputAction.CallbackContext obj)
     {
         if (!phyCheck.CheckGround()) return;
-
         rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+    }
+
+    private void Accelerate(InputAction.CallbackContext obj)
+    {
+        if (!phyCheck.CheckGround()) return;
+        speed = runSpeed;
+    }
+
+    private void Runing_canceled(InputAction.CallbackContext obj)
+    {
+        speed = walkSpeed;
     }
 }
